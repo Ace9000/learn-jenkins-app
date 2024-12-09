@@ -1,12 +1,22 @@
 pipeline {
     agent any
+
     stages {
-        stage('Example') {
-            steps {
-                script {
-                    sh 'echo "Hello from Jenkins"'
-                    sh 'whoami'
+        stage('Build') {
+            agent {
+                docker {
+                    image 'node:18-alpine'
                 }
+            }
+            steps {
+                sh '''
+                  ls -ls
+                  node --version
+                  npm --version
+                  npm ci
+                  npm run build
+                  ls -la
+                '''
             }
         }
     }
