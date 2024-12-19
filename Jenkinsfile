@@ -42,13 +42,13 @@ pipeline {
         }
         success {
             echo 'Pipeline executed successfully!'
-            mail to: 'youremail@example.com',
+            mail to: 'anastas.acevski@outlook.com,
                  subject: 'Jenkins Pipeline Success',
                  body: 'The pipeline executed successfully.'
         }
         failure {
             echo 'Pipeline failed!'
-            mail to: 'youremail@example.com',
+            mail to: 'anastas.acevski@outlook.com,
                  subject: 'Jenkins Pipeline Failure',
                  body: 'The pipeline has failed. Please check the logs.'
         }
