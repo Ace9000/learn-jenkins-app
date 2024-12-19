@@ -1,30 +1,25 @@
 pipeline {
     agent any
-
     stages {
-        stage('Build') {
-            agent {
-                docker {
-                    image 'node:18-alpine'
-                    reuseNode true
-                }
-            }
+        stage('Checkout') {
             steps {
-                sh '''
-                  ls -ls
-                  node --version
-                  npm --version
-                  npm ci
-                  npm run build
-                  ls -la
-                '''
+                echo 'Checking out code...'
+                checkout scm
             }
         }
-
-        stage('Test') {
+        stage('Build') {
             steps {
-                echo 'Test Stage'
+                echo 'Building the project...'              
+                sh 'echo "Build Complete!"'
             }
+        }
+    }
+    post {
+        success {
+            echo 'Pipeline executed successfully!'
+        }
+        failure {
+            echo 'Pipeline failed!'
         }
     }
 }
