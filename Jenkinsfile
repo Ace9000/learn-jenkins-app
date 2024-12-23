@@ -37,20 +37,16 @@ pipeline {
         }
     }
     post {
-        always {
-            echo 'Pipeline completed.'
-        }
-        success {
-            echo 'Pipeline executed successfully!'
-            mail to: 'anastas.acevski@outlook.com',
+    success {
+        emailext to: 'anastas.acevski@outlook.com',
                  subject: 'Jenkins Pipeline Success',
-                 body: 'The pipeline executed successfully.'
-        }
-        failure {
-            echo 'Pipeline failed!'
-            mail to: 'anastas.acevski@outlook.com',
+                 body: '''<p>The pipeline executed successfully.</p>''',
+                 mimeType: 'text/html'
+    }
+    failure {
+        emailext to: 'anastas.acevski@outlook.com',
                  subject: 'Jenkins Pipeline Failure',
-                 body: 'The pipeline has failed. Please check the logs.'
-        }
+                 body: '''<p>The pipeline has failed. Please check the logs.</p>''',
+                 mimeType: 'text/html'
     }
 }
