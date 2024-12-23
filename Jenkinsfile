@@ -36,17 +36,4 @@ pipeline {
             }
         }
     }
-    post {
-    success {
-        emailext to: 'anastas.acevski@outlook.com',
-                 subject: 'Jenkins Pipeline Success',
-                 body: '''<p>The pipeline executed successfully.</p>''',
-                 mimeType: 'text/html'
-    }
-    failure {
-        emailext to: 'anastas.acevski@outlook.com',
-                 subject: 'Jenkins Pipeline Failure',
-                 body: '''<p>The pipeline has failed. Please check the logs.</p>''',
-                 mimeType: 'text/html'
-    }
 }
