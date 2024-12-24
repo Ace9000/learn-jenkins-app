@@ -1,56 +1,60 @@
 pipeline {
     agent any
+
     stages {
         stage('Checkout') {
             steps {
-                echo 'Checking out code...'
+                echo "Checking out the repository..."
                 checkout scm
             }
         }
         stage('Build') {
             steps {
-                echo 'Building the project...'
-                sh 'echo "Build Complete!"'
+                echo "Building the Project..."
+                echo "Build process simulated."
             }
         }
-        stage('Initial Check') {
+        stage('Parallel File Copy') {
             steps {
-                echo 'Performing initial checks...'
-                sh 'echo "Initial Checks Passed!"'
-            }
-        }
-        stage('Parallel Execution') {
-            parallel {
-                stage('Copy to Server A') {
-                    steps {
-                        echo 'Copying files to Server A...'
-                        sh 'echo "Files copied to Server A."'
-                    }
+                script {
+                    echo "Starting Parallel File Copy..."
+                    parallel (
+                        "Copy to Location 1": {
+                            bat "echo Copying files to Location 1..."
+                        },
+                        "Copy to Location 2": {
+                            bat "echo Copying files to Location 2..."
+                        }
+                    )
                 }
-                stage('Copy to Server B') {
-                    steps {
-                        echo 'Copying files to Server B...'
-                        sh 'echo "Files copied to Server B."'
-                    }
-                }
-                
             }
         }
     }
+
     post {
-        always {
+        success {
+            emailext(
+                subject: "SUCCESS: ${env.JOB_NAME} Build #${env.BUILD_NUMBER}",
+                body: """<p style="color:green;">✅ Build <b>#${env.BUILD_NUMBER}</b> succeeded!</p>
+                         <p>View logs: <a href='${env.BUILD_URL}'>Build Logs</a></p>""",
+                to: "anastas.acevski@outlook.com",
+                mimeType: 'text/html'
+            )
+
             script {
-                echo "Sending notification email"
+                build job: 'SystemStatusReport', wait: false
             }
-            emailext (
-                subject: 'Build Status: ${currentBuild.currentResult}',
-                body: """
-                    <p>Job '${env.JOB_NAME}' (${env.BUILD_NUMBER}) has finished with status: ${currentBuild.currentResult}</p>
-                    <p>Check the console output for details: <a href="${env.BUILD_URL}">${env.BUILD_URL}</a></p>
-                """,
-                recipientProviders: [[$class: 'DevelopersRecipientProvider']],
-                to: 'anastas.acevski@outlook.com'
+        }
+        
+        failure {
+            emailext(
+                subject: "FAILURE: ${env.JOB_NAME} Build #${env.BUILD_NUMBER}",
+                body: """<p style="color:red;">❌ Build <b>#${env.BUILD_NUMBER}</b> failed!</p>
+                         <p>View logs: <a href='${env.BUILD_URL}'>Build Logs</a></p>""",
+                to: "anastas.acevski@outlook.com",
+                mimeType: 'text/html'
             )
         }
     }
 }
+
