@@ -33,7 +33,24 @@ pipeline {
                         sh 'echo "Files copied to Server B."'
                     }
                 }
+                
             }
+        }
+    }
+    post {
+        always {
+            script {
+                echo "Sending notification email"
+            }
+            emailext (
+                subject: 'Build Status: ${currentBuild.currentResult}',
+                body: """
+                    <p>Job '${env.JOB_NAME}' (${env.BUILD_NUMBER}) has finished with status: ${currentBuild.currentResult}</p>
+                    <p>Check the console output for details: <a href="${env.BUILD_URL}">${env.BUILD_URL}</a></p>
+                """,
+                recipientProviders: [[$class: 'DevelopersRecipientProvider']],
+                to: 'anastas.acevski@outlook.com'
+            )
         }
     }
 }
